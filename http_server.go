@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -16,10 +17,28 @@ type HttpServer struct {
 	mux         *http.ServeMux
 }
 
+func rateLimitMiddleware(next http.Handler, rateLimiter *RateLimiter) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("got new request")
+		canMake, err := rateLimiter.CanMakeRequest(r)
+		if err != nil {
+			log.Printf("error when validating request. Err: %s", err)
+		}
+
+		if !canMake {
+			log.Println("request rate limited")
+			io.WriteString(w, "rate-limited")
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func NewHttpServer(port int64, rateLimiter *RateLimiter, handler http.HandlerFunc) *HttpServer {
 	mux := http.NewServeMux()
 
-	mux.Handle("/", handler)
+	mux.Handle("/", rateLimitMiddleware(handler, rateLimiter))
 
 	return &HttpServer{
 		port:        port,
