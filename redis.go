@@ -7,6 +7,7 @@ var ErrKeyNotFound = errors.New("key not found")
 type Cache interface {
 	GetKey(string) (int64, error)
 	SetKey(string, int64) error
+	FlushData() error
 }
 
 type InMemoryCache struct {
@@ -17,6 +18,12 @@ type InMemoryCache struct {
 func NewInMemoryCache() InMemoryCache {
 	records := make(map[string]int64)
 	return InMemoryCache{records: records}
+}
+
+func (r *InMemoryCache) FlushData() error {
+	r.records = make(map[string]int64)
+
+	return nil
 }
 
 func (r *InMemoryCache) GetKey(k string) (int64, error) {

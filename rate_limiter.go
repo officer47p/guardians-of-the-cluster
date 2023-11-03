@@ -41,6 +41,10 @@ func NewRateLimiter(
 	}
 }
 
+func (rl *RateLimiter) ResetCycle() error {
+	return rl.cache.FlushData()
+}
+
 func (rl *RateLimiter) CanMakeRequest(r *http.Request) (bool, error) {
 	token := r.Host
 	totalRequestQuota := rl.getTotalRequestQuota(token)
