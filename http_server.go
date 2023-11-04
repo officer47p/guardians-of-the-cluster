@@ -25,6 +25,8 @@ func rateLimitMiddleware(next http.Handler, rateLimiter *RateLimiter) http.Handl
 		canMake, err := rateLimiter.CanMakeRequest(token, requestSize)
 		if err != nil {
 			log.Printf("error when validating request. Err: %s", err)
+			io.WriteString(w, "internal-error")
+			return
 		}
 
 		if !canMake {
