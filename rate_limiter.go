@@ -45,19 +45,28 @@ func (rl *RateLimiter) ResetCycle() error {
 }
 
 func (rl *RateLimiter) CanMakeRequest(token string, _ int64) (bool, error) {
-	totalRequestQuota := rl.getTotalRequestQuota(token)
-	currentRequestQuota := rl.getCurrentRequestQuota(token)
+	totalRequestQuota, err := rl.getTotalRequestQuota(token)
+	if err != nil {
+		log.Printf("error while calling getTotalRequestQuota. Err: %s", err)
+		return false, err
+	}
+	currentRequestQuota, err := rl.getCurrentRequestQuota(token)
+	if err != nil {
+		log.Printf("error while calling getCurrentRequestQuota. Err: %s", err)
+		return false, err
+	}
 
 	if currentRequestQuota+1 > totalRequestQuota {
 		return false, nil
 	}
 
-	err := rl.setCurrentRequestQuota(token, currentRequestQuota+1)
+	err = rl.setCurrentRequestQuota(token, currentRequestQuota+1)
 	if err != nil {
 		log.Printf("error while setting the current request quota for token %s. Err: %s", token, err)
 		return false, err
 	}
 
+	// Only passed here
 	return true, nil
 
 }
@@ -86,7 +95,7 @@ func (rl *RateLimiter) getTotalRequestQuota(token string) (int64, error) {
 	return q, nil
 }
 
-func (rl *RateLimiter) getCurrentRequestQuota(token string) int64 {
+func (rl *RateLimiter) getCurrentRequestQuota(token string) (int64, error) {
 	// quota:request:current:token
 	q, err := rl.cache.GetKey(fmt.Sprintf("quota:request:current:%s", token))
 	if err != nil {
@@ -94,14 +103,16 @@ func (rl *RateLimiter) getCurrentRequestQuota(token string) int64 {
 		if errors.Is(err, ErrKeyNotFound) {
 			err := rl.cache.SetKey(fmt.Sprintf("quota:request:current:%s", token), 0)
 			if err != nil {
-				log.Fatalf("error setting the current request quota for token %s. Err: %s", token, err)
+				log.Printf("error setting the current request quota for token %s. Err: %s", token, err)
+				return 0, err
 			}
 
-			return 0
+			return 0, nil
 		}
 
-		log.Fatalf("error while getting the current request quota for token %s. Err: %s", token, err)
+		log.Printf("error while getting the current request quota for token %s. Err: %s", token, err)
+		return 0, err
 	}
 
-	return q
+	return q, nil
 }
