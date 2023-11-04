@@ -77,8 +77,8 @@ func (rl *RateLimiter) getTotalRequestQuota(token string) int64 {
 		// If quota for user was not found
 		if errors.Is(err, ErrKeyNotFound) {
 			// Set default quota in the cache
-			// err handling here is not critical, so we just log some information
-			// is setting the quota failed
+			// Error here won't cause the app from functioning properly, so we
+			// just log an error
 			if err := rl.cache.SetKey(fmt.Sprintf("quota:request:total:%s", token), rl.DefaultUserRequestQuota); err != nil {
 				log.Printf("error while setting the default quota for user. Err: %s\n", err)
 			}
@@ -96,6 +96,7 @@ func (rl *RateLimiter) getCurrentRequestQuota(token string) int64 {
 	// quota:request:current:token
 	q, err := rl.cache.GetKey(fmt.Sprintf("quota:request:current:%s", token))
 	if err != nil {
+		// If quota for user was not found
 		if errors.Is(err, ErrKeyNotFound) {
 			err := rl.cache.SetKey(fmt.Sprintf("quota:request:current:%s", token), 0)
 			if err != nil {
