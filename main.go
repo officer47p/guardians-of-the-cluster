@@ -16,10 +16,10 @@ func requestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	port := 3333                           // TODO: Read from environment
-	defaultUserRequestQuota := int64(5)    // TODO: Read from environment
-	defaultUserTrafficQuota := int64(1024) // TODO: Read from environment
-	resetInterval := time.Second * 10      // TODO: Read from environment
+	port := 3333                         // TODO: Read from environment
+	defaultUserRequestQuota := int64(5)  // TODO: Read from environment
+	defaultUserTrafficQuota := int64(10) // TODO: Read from environment
+	resetInterval := time.Second * 10    // TODO: Read from environment
 
 	cache := NewInMemoryCache()
 	rateLimiter := NewRateLimiter(
