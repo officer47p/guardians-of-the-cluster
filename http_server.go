@@ -20,7 +20,9 @@ type HttpServer struct {
 func rateLimitMiddleware(next http.Handler, rateLimiter *RateLimiter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("got new request")
-		canMake, err := rateLimiter.CanMakeRequest(r)
+		token := r.Host
+		requestSize := r.ContentLength
+		canMake, err := rateLimiter.CanMakeRequest(token, requestSize)
 		if err != nil {
 			log.Printf("error when validating request. Err: %s", err)
 		}

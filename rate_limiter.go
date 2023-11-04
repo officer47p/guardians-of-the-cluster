@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"net/http"
 	"time"
 )
 
@@ -45,8 +44,7 @@ func (rl *RateLimiter) ResetCycle() error {
 	return rl.cache.FlushData()
 }
 
-func (rl *RateLimiter) CanMakeRequest(r *http.Request) (bool, error) {
-	token := r.Host
+func (rl *RateLimiter) CanMakeRequest(token string, _ int64) (bool, error) {
 	totalRequestQuota := rl.getTotalRequestQuota(token)
 	currentRequestQuota := rl.getCurrentRequestQuota(token)
 
