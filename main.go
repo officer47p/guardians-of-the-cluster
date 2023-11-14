@@ -4,16 +4,9 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"sync"
+	"os"
 	"time"
 )
-
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := io.WriteString(w, "Hello there :)")
-	if err != nil {
-		log.Printf("error handling the request. Err: %s\n", err)
-	}
-}
 
 func main() {
 	port := 3333                         // TODO: Read from environment
@@ -48,12 +41,24 @@ func main() {
 		}
 	}()
 
-	httpServer := NewHttpServer(int64(port), &rateLimiter, requestHandler)
+	httpServer := NewHttpServer(
+		// HTTP server port
+		int64(port),
+		// Passing rate limiter middleware
+		&rateLimiter,
+		// Defining a dummy handler for success cases
+		func(w http.ResponseWriter, r *http.Request) {
+			_, err := io.WriteString(w, "Hello there :)")
+			if err != nil {
+				log.Printf("error handling the request. Err: %s\n", err)
+			}
+		},
+	)
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go httpServer.Start()
 	log.Printf("server is listening on port %d\n", port)
-
-	wg.Wait()
+	err := httpServer.Start()
+	if err != nil {
+		log.Printf("error starting server: %s\n", err)
+		os.Exit(1)
+	}
 }
