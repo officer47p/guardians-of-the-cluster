@@ -1,6 +1,6 @@
-# Guardian
+# Guardians of The Cluster
 
-A dead simple rate-limiting service that just works.
+A dead simple multi-instance supported rate-limiting service that just works.
 
 ## How to run
 
