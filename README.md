@@ -14,11 +14,13 @@ A dead simple rate-limiting service that just works.
 You can use some basic curl commands to make requests to the server:
 
 **GET request:**
+
 ```bash
 curl localhost:3333/this-does-not-matter
 ```
 
 **POST request:**
+
 ```bash
-curl -X POST localhost:3333/this-does-not-matter
+curl -X POST localhost:3333/this-does-not-matter -d "the-data-string-that-you-want-to-send-with-your-request-why-you-are-still-reading-this?"
 ```
