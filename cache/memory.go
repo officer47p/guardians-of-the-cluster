@@ -1,14 +1,4 @@
-package main
-
-import "errors"
-
-var ErrKeyNotFound = errors.New("key not found")
-
-type Cache interface {
-	GetKey(string) (int64, error)
-	SetKey(string, int64) error
-	FlushData() error
-}
+package cache
 
 type InMemoryCache struct {
 	// maps are passed by reference by default

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"guardian/cache"
 	"io"
 	"log"
 	"net/http"
@@ -14,9 +15,19 @@ func main() {
 	defaultUserTrafficQuota := int64(10) // TODO: Read from environment
 	resetInterval := time.Second * 10    // TODO: Read from environment
 
-	cache := NewInMemoryCache()
+	// Using in-memory cache, does not work when deploying multi instance of
+	// this service
+
+	// cache := cache.NewInMemoryCache()
+
+	// Using redis-cache, does work when deploying multi instance of this service
+	cache, err := cache.NewRedisCache()
+	if err != nil {
+		log.Panicf("failed to connect to redis. Err: %s\n", err)
+	}
+
 	rateLimiter := NewRateLimiter(
-		&cache,
+		cache,
 		defaultUserRequestQuota,
 		defaultUserTrafficQuota,
 		resetInterval,
@@ -56,7 +67,7 @@ func main() {
 	)
 
 	log.Printf("server is listening on port %d\n", port)
-	err := httpServer.Start()
+	err = httpServer.Start()
 	if err != nil {
 		log.Printf("error starting server: %s\n", err)
 		os.Exit(1)

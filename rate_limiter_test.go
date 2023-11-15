@@ -1,6 +1,7 @@
 package main
 
 import (
+	"guardian/cache"
 	"testing"
 	"time"
 )
@@ -15,7 +16,8 @@ func TestRateLimiterRequestNumberQuota(t *testing.T) {
 
 	t.Run("should rate-limit", func(t *testing.T) {
 		token := "some-string-as-token"
-		cache := NewInMemoryCache()
+
+		cache := cache.NewInMemoryCache()
 		rateLimiter := NewRateLimiter(
 			&cache,
 			defaultUserRequestQuota,
@@ -44,7 +46,7 @@ func TestRateLimiterRequestNumberQuota(t *testing.T) {
 
 	t.Run("should recover from rate-limit after cycle reset", func(t *testing.T) {
 		token := "some-string-as-token"
-		cache := NewInMemoryCache()
+		cache := cache.NewInMemoryCache()
 		rateLimiter := NewRateLimiter(
 			&cache,
 			defaultUserRequestQuota,
@@ -87,7 +89,7 @@ func TestRateLimiterTrafficQuota(t *testing.T) {
 	t.Run("should-rate-limit", func(t *testing.T) {
 		token := "some-string-as-token"
 
-		cache := NewInMemoryCache()
+		cache := cache.NewInMemoryCache()
 		rateLimiter := NewRateLimiter(
 			&cache,
 			defaultUserRequestQuota,
@@ -116,7 +118,7 @@ func TestRateLimiterTrafficQuota(t *testing.T) {
 	t.Run("should recover from rate-limit after cycle reset", func(t *testing.T) {
 		token := "some-string-as-token"
 
-		cache := NewInMemoryCache()
+		cache := cache.NewInMemoryCache()
 		rateLimiter := NewRateLimiter(
 			&cache,
 			defaultUserRequestQuota,

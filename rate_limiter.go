@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"guardian/cache"
 	"log"
 	"time"
 )
@@ -11,7 +12,7 @@ import (
 // some parameters of the request such as token and request size.
 type RateLimiter struct {
 	// Cache is the storage implementation that the RateLimiter service uses.
-	cache Cache
+	cache cache.Cache
 
 	// DefaultUserRequestQuota is used when no quota limitiation is found for a
 	// userId
@@ -28,7 +29,7 @@ type RateLimiter struct {
 }
 
 func NewRateLimiter(
-	cache Cache,
+	cache cache.Cache,
 	defaultUserRequestQuota int64,
 	defaultUserTrafficQuota int64,
 	interval time.Duration,
@@ -108,7 +109,7 @@ func (rl *RateLimiter) getTotalRequestQuota(token string) (int64, error) {
 	q, err := rl.cache.GetKey(fmt.Sprintf("quota:request:total:%s", token))
 	if err != nil {
 		// If quota for user was not found
-		if errors.Is(err, ErrKeyNotFound) {
+		if errors.Is(err, cache.ErrKeyNotFound) {
 			// return default quota
 			return rl.DefaultUserRequestQuota, nil
 		} else {
@@ -126,7 +127,7 @@ func (rl *RateLimiter) getCurrentRequestQuota(token string) (int64, error) {
 	q, err := rl.cache.GetKey(fmt.Sprintf("quota:request:current:%s", token))
 	if err != nil {
 		// If quota for user was not found
-		if errors.Is(err, ErrKeyNotFound) {
+		if errors.Is(err, cache.ErrKeyNotFound) {
 			err := rl.cache.SetKey(fmt.Sprintf("quota:request:current:%s", token), 0)
 			if err != nil {
 				log.Printf("error setting the current request quota for token %s. Err: %s", token, err)
@@ -155,7 +156,7 @@ func (rl *RateLimiter) getTotalTrafficQuota(token string) (int64, error) {
 	q, err := rl.cache.GetKey(fmt.Sprintf("quota:traffic:total:%s", token))
 	if err != nil {
 		// If quota for user was not found
-		if errors.Is(err, ErrKeyNotFound) {
+		if errors.Is(err, cache.ErrKeyNotFound) {
 			// return default quota
 			return rl.DefaultUserTrafficQuota, nil
 		} else {
@@ -173,7 +174,7 @@ func (rl *RateLimiter) getCurrentTrafficQuota(token string) (int64, error) {
 	q, err := rl.cache.GetKey(fmt.Sprintf("quota:traffic:current:%s", token))
 	if err != nil {
 		// If quota for user was not found
-		if errors.Is(err, ErrKeyNotFound) {
+		if errors.Is(err, cache.ErrKeyNotFound) {
 			err := rl.cache.SetKey(fmt.Sprintf("quota:traffic:current:%s", token), 0)
 			if err != nil {
 				log.Printf("error setting the current traffic quota for token %s. Err: %s", token, err)
