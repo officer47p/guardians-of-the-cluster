@@ -156,33 +156,3 @@ func TestRateLimiterTrafficQuota(t *testing.T) {
 	})
 
 }
-
-// func TestRateLimiterReturnErrorAfterHittingTrafficQuota(t *testing.T) {
-// 	token := "some-string-as-token"
-
-// 	cache := NewInMemoryCache()
-// 	rateLimiter := NewRateLimiter(
-// 		&cache,
-// 		defaultUserRequestQuota,
-// 		defaultUserTrafficQuota,
-// 		resetInterval,
-// 	)
-
-// 	for i := 0; i < 2; i++ {
-// 		ok, err := rateLimiter.CanMakeRequest(token, 4)
-// 		if err != nil {
-// 			t.Fatalf("hit error. Err: %s", err)
-// 		}
-// 		if !ok {
-// 			t.Fatal("rate limited")
-// 		}
-// 	}
-// 	ok, err := rateLimiter.CanMakeRequest(token, 4)
-// 	if err != nil {
-// 		t.Fatalf("hit error")
-// 	}
-// 	if ok {
-// 		t.Fatalf("was not rate limited")
-// 	}
-
-// }
