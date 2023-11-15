@@ -8,21 +8,21 @@ import (
 	"time"
 )
 
-// RateLimtier limits the number of requests per minute for each user based on
+// RateLimiter limits the number of requests per minute for each user based on
 // some parameters of the request such as token and request size.
 type RateLimiter struct {
 	// Cache is the storage implementation that the RateLimiter service uses.
 	cache cache.Cache
 
-	// DefaultUserRequestQuota is used when no quota limitiation is found for a
+	// DefaultUserRequestQuota is used when no quota limitation is found for a
 	// userId
 	DefaultUserRequestQuota int64
 
-	// DefaultUserTrafficQuota is used when no quota limitiation is found for a
+	// DefaultUserTrafficQuota is used when no quota limitation is found for a
 	// userId
 	DefaultUserTrafficQuota int64
 
-	// Interval is the duration for a cycle. At the begining of each cycle,
+	// Interval is the duration for a cycle. At the beginning of each cycle,
 	// rate limiter flushes the data in the cache, so rate-limited users can
 	// continue sending requests again.
 	Interval time.Duration
