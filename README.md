@@ -1,6 +1,7 @@
 # Guardians of The Cluster
 
 A dead simple multi-instance supported rate-limiting service that just works.
+(Multi-instance supported part is not implemented correctly yet)
 
 ## How to start the server
 
@@ -23,7 +24,7 @@ You can use some basic curl commands to make requests to the server:
 **GET request:**
 
 ```bash
-curl localhost:3333/this-does-not-matter
+curl localhost:3333/this-does-not-matter -H "X-User-Id: user-id"
 ```
 
 **POST request:**
