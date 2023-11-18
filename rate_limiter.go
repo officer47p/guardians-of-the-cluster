@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"guardian/cache"
 	"log"
-	"time"
 )
 
 // RateLimiter limits the number of requests per minute for each user based on
@@ -21,23 +20,16 @@ type RateLimiter struct {
 	// DefaultUserTrafficQuota is used when no quota limitation is found for a
 	// userId
 	DefaultUserTrafficQuota int64
-
-	// Interval is the duration for a cycle. At the beginning of each cycle,
-	// rate limiter flushes the data in the cache, so rate-limited users can
-	// continue sending requests again.
-	Interval time.Duration
 }
 
 func NewRateLimiter(
 	cache cache.Cache,
 	defaultUserRequestQuota int64,
 	defaultUserTrafficQuota int64,
-	interval time.Duration,
 ) RateLimiter {
 	return RateLimiter{cache: cache,
 		DefaultUserRequestQuota: defaultUserRequestQuota,
 		DefaultUserTrafficQuota: defaultUserTrafficQuota,
-		Interval:                interval,
 	}
 }
 

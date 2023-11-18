@@ -6,14 +6,34 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	port := 3333                         // TODO: Read from environment
-	defaultUserRequestQuota := int64(5)  // TODO: Read from environment
-	defaultUserTrafficQuota := int64(10) // TODO: Read from environment
-	resetInterval := time.Second * 10    // TODO: Read from environment
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Panicf("failed to read env variables. Err: %s\n", err)
+	}
+
+	port, err := strconv.ParseInt(os.Getenv("PORT"), 10, 64)
+	if err != nil {
+		log.Panicf("failed to read env variable PORT. Err: %s\n", err)
+	}
+	defaultUserRequestQuota, err := strconv.ParseInt(os.Getenv("DEFAULT_USER_REQUEST_QUOTA"), 10, 64)
+	if err != nil {
+		log.Panicf("failed to read env variable DEFAULT_USER_REQUEST_QUOTA. Err: %s\n", err)
+	}
+	defaultUserTrafficQuota, err := strconv.ParseInt(os.Getenv("DEFAULT_USER_TRAFFIC_QUOTA"), 10, 64)
+	if err != nil {
+		log.Panicf("failed to read env variable DEFAULT_USER_TRAFFIC_QUOTA. Err: %s\n", err)
+	}
+	resetIntervalSeconds, err := strconv.ParseInt(os.Getenv("RESET_INTERVAL_SECONDS"), 10, 64)
+	if err != nil {
+		log.Panicf("failed to read env variable RESET_INTERVAL_SECONDS. Err: %s\n", err)
+	}
 
 	// Using in-memory cache, does not work when deploying multi instance of
 	// this service
@@ -30,11 +50,10 @@ func main() {
 		cache,
 		defaultUserRequestQuota,
 		defaultUserTrafficQuota,
-		resetInterval,
 	)
 
 	// Schedule cycle reset based on the provided reset interval
-	ticker := time.NewTicker(resetInterval)
+	ticker := time.NewTicker(time.Duration(resetIntervalSeconds * int64(time.Second)))
 	quit := make(chan struct{})
 	go func() {
 		for {

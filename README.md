@@ -29,5 +29,5 @@ curl localhost:3333/this-does-not-matter
 **POST request:**
 
 ```bash
-curl -X POST localhost:3333/this-does-not-matter -d "the-data-string-that-you-want-to-send-with-your-request-why-you-are-still-reading-this?"
+curl -X POST localhost:3333/this-does-not-matter -d "data" -H "X-User-Id: user-id"
 ```

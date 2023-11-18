@@ -19,9 +19,14 @@ type HttpServer struct {
 func rateLimitMiddleware(next http.Handler, rateLimiter *RateLimiter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("got new request")
-
+		userId, ok := r.Header["X-User-Id"]
+		if !ok || len(userId) == 0 {
+			log.Println("error when reading user id from header. User ID does not exist")
+			io.WriteString(w, "user-id-does-not-exist")
+			return
+		}
 		// TODO: Implement correct token from headers.
-		token := r.Host
+		token := userId[0]
 		requestSize := r.ContentLength
 
 		log.Printf("Token: %s\n", token)

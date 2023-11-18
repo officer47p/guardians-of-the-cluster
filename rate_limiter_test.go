@@ -3,13 +3,11 @@ package main
 import (
 	"guardian/cache"
 	"testing"
-	"time"
 )
 
 var (
-	defaultUserRequestQuota = int64(5)         // TODO: Read from environment
-	defaultUserTrafficQuota = int64(10)        // TODO: Read from environment
-	resetInterval           = time.Second * 10 // TODO: Read from environment
+	defaultUserRequestQuota = int64(5)
+	defaultUserTrafficQuota = int64(10)
 )
 
 func TestRateLimiterRequestNumberQuota(t *testing.T) {
@@ -22,7 +20,6 @@ func TestRateLimiterRequestNumberQuota(t *testing.T) {
 			&cache,
 			defaultUserRequestQuota,
 			defaultUserTrafficQuota,
-			resetInterval,
 		)
 
 		for i := 0; i < int(defaultUserRequestQuota); i++ {
@@ -51,7 +48,6 @@ func TestRateLimiterRequestNumberQuota(t *testing.T) {
 			&cache,
 			defaultUserRequestQuota,
 			defaultUserTrafficQuota,
-			resetInterval,
 		)
 
 		for i := 0; i < int(defaultUserRequestQuota*2); i++ {
@@ -94,7 +90,6 @@ func TestRateLimiterTrafficQuota(t *testing.T) {
 			&cache,
 			defaultUserRequestQuota,
 			defaultUserTrafficQuota,
-			resetInterval,
 		)
 
 		for i := 0; i < 2; i++ {
@@ -123,7 +118,6 @@ func TestRateLimiterTrafficQuota(t *testing.T) {
 			&cache,
 			defaultUserRequestQuota,
 			defaultUserTrafficQuota,
-			resetInterval,
 		)
 
 		for i := 0; i < 2; i++ {
